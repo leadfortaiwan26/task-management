@@ -1,0 +1,10 @@
+{
+  "short": "NPO 任務管理健檢框架",
+  "eyebrow": "v0.1 · 模組一：角色、權責與協作",
+  "description": "RACI × 七級授權的權責地圖、角色卡，以及八個健檢面向，給專職少、志工多的台灣 NPO。",
+  "footer": "v0.1 草稿。作者 d9nielworking，研究與整理由 Claude 協助。法規摘要是閱讀條文的整理，不是法律意見；使用前請對照全國法規資料庫原文。Management 3.0 卡片不是開放授權；角色卡模板改寫自 Sociocracy 3.0（CC BY-SA 4.0）。",
+  "related": [
+    { "label": "營運健檢框架", "url": "https://leadfortaiwan26.github.io/operational-framework/" },
+    { "label": "GitHub", "url": "https://github.com/leadfortaiwan26/task-management" }
+  ]
+}

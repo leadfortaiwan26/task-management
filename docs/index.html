@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NPO 任務管理健檢框架 v0.1 — 模組一：角色、權責與協作</title>
+<meta name="description" content="RACI × 七級授權的權責地圖、角色卡，以及八個健檢面向，給專職少、志工多的台灣 NPO。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;800&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+<header class="bar"><a class="home" href="./">NPO 任務管理健檢框架</a><span class="links"><a href="https://leadfortaiwan26.github.io/operational-framework/">營運健檢框架</a><a href="https://github.com/leadfortaiwan26/task-management">GitHub</a></span></header>
+<div class="shell">
+<nav class="toc" aria-label="本頁目錄"><ol><li><a href="#0-一頁總覽">0. 一頁總覽</a></li><li><a href="#1-範圍與名詞">1. 範圍與名詞</a></li><li><a href="#2-核心工具一-權責地圖-raci-×-授權等級">2. 核心工具一：權責地圖（RACI × 授權等級）</a></li><li><a href="#3-核心工具二-角色卡">3. 核心工具二：角色卡</a></li><li><a href="#4-健檢面向與成熟度">4. 健檢面向與成熟度</a></li><li><a href="#5-對任務管理工具的設計建議">5. 對任務管理工具的設計建議</a></li><li><a href="#6-導入步驟">6. 導入步驟</a></li><li><a href="#7-紅旗">7. 紅旗</a></li><li><a href="#8-之後的模組-預告">8. 之後的模組（預告）</a></li><li><a href="#9-證據強度與限制">9. 證據強度與限制</a></li><li><a href="#附錄-權責地圖範本">附錄：權責地圖範本</a></li></ol></nav>
+<main>
+<header class="doc"><div class="eyebrow">v0.1 · 模組一：角色、權責與協作</div><h1>NPO 任務管理健檢框架 v0.1 — 模組一：角色、權責與協作</h1><div class="legend">證據標記：<span class="tag F">F</span> 事實 <span class="tag E">E</span> 專家或機構主張 <span class="tag I">I</span> 推論 <span class="tag H">H</span> 未查證</div></header>
+<blockquote>
+<p>適用對象：專職人數少、志工比例高的台灣 NPO（特別是社會團體），以及主管兼任多個部門、志工多為學生的組織。<br>證據標記：<span class="tag F">F</span> 事實／<span class="tag E">E</span> 專家或機構主張／<span class="tag I">I</span> 推論／<span class="tag H">H</span> 未查證。本文件大部分是 <span class="tag I">I</span>：把研究結論轉成設計判斷。<br>這是通用版：不含任何特定組織的現況。法規摘要以 2026-10 前後的條文為準，使用前請對照原文；本文是閱讀條文的整理，不是法律意見。<br>上位框架：<a href="https://leadfortaiwan26.github.io/operational-framework/" target="_blank" rel="noopener">NPO 營運健檢框架</a>。本模組是 D7（人力與志工）與 D8（營運系統）在「日常任務管理」層的展開。</p>
+</blockquote>
+<hr>
+<h2 id="0-一頁總覽">0. 一頁總覽</h2>
+<p><strong>要回答的問題</strong>：專職人員（正職、兼職）與志工之間，「誰負責什麼、誰能決定什麼、什麼時候一起做」是否清楚、合理、可傳承？</p>
+<p><strong>RACI 與 delegation cards 能不能融合？可以，而且不需要發明新方法。</strong> <span class="tag I">F→I</span></p>
+<ul>
+<li>RACI 的前身 Responsibility Charting（Gilmore &amp; Nelson，<em>Federal Probation</em>，約 1970 年代末）本來就是「<strong>決策 × 行動者 × 參與程度（degree of participation）</strong>」的表。A 的原始定義是「signs off or vetoes」，原文承認有組織用到「up to a dozen different degrees of participation」，建立流程是<strong>個別投票 → 統計分歧 → 協商</strong>。<span class="tag F">F</span></li>
+<li>Management 3.0 的 Delegation Poker 做的事幾乎一樣：用七級描述授權程度，用打牌暴露認知差距。Appelo 自己也說七級中「informing 與 consulting 的區分」借自 RACI；他反對的只有兩點：把 A 與 R 拆開，以及以「單一任務」為粒度。<span class="tag F">F</span></li>
+<li>所以融合方式是：<strong>以「決策領域」為列，指定一個授權方（A）與承接方（R），在兩者之間標上 1–7 級授權程度，C／I 只用來標「兩者以外」的人。</strong> 本框架稱這張表為「權責地圖」。</li>
+</ul>
+<p><strong>模組一的八個健檢面向</strong></p>
+<div class="tbl"><table><thead><tr>
+<th>#</th>
+<th>面向</th>
+<th>核心問題</th>
+</tr>
+</thead><tbody><tr>
+<td>R1</td>
+<td>角色清楚度</td>
+<td>每個角色（含兼任的「帽子」）有沒有寫清楚目的、責任、邊界？</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>決策權清楚度</td>
+<td>重要決策領域是否都有唯一的授權方，且大家對授權程度的認知一致？</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>授權落差</td>
+<td>宣告的授權程度和實際行為一致嗎？有沒有過度控制或混亂放任？</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>負荷與瓶頸</td>
+<td>決策和核准是否集中在少數人身上？核准要等多久？</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>分工制衡與法定下限</td>
+<td>財務、勸募、個資等法定要求是否落在正確的角色上？</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>專職 × 志工時段協作</td>
+<td>時段落差是否靠「互相犧牲」解決？哪些事其實不必同步？</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>權限與交接</td>
+<td>換屆、離任時，角色、權限、進行中工作能不能乾淨移交？</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>工時紀錄與監控設計</td>
+<td>計時與審核工具，是否在不傷害自主感的前提下設計？</td>
+</tr>
+</tbody></table></div>
+<p>成熟度沿用上位框架的 1 臨時／2 成形／3 制度化／4 優化；沒有證據只能給 1 分，並標示信心高中低。</p>
+<p><strong>小型 NPO 最常見的三個結構風險</strong> <span class="tag I">I</span></p>
+<ol>
+<li><strong>權責集中在少數兼任主管</strong>：例如執行長兼財務、營運長兼兩個部門主管。這是瓶頸風險，也是財務職能分工（SoD）風險。</li>
+<li><strong>管理工具的「送審」沒有對應到決策權</strong>：誰審、能不能否決、退回率多少，沒有人定義過。</li>
+<li><strong>專職與學生志工時段對不上</strong>：專職是平日白天，學生志工是晚上、週末，變成互相犧牲。根因常是「需要同步核准」的事太多，屬於授權設計問題，不只是排程問題。</li>
+</ol>
+<hr>
+<h2 id="1-範圍與名詞">1. 範圍與名詞</h2>
+<h3 id="1-1-範圍">1.1 範圍</h3>
+<ul>
+<li><strong>第一層：專職人員</strong>（正職、兼職）。多數授權方 A 與承接方 R 的來源。</li>
+<li><strong>第二層：志工</strong>。在權責地圖中通常是「承接方」。</li>
+<li><strong>治理層：會員大會、理事會、監事會</strong>。只在涉及法定下限的決策領域出現。</li>
+<li><strong>不在本模組</strong>：工作流程效率、OKR 品質、工具功能細節。留給之後的模組（見第 8 節）。</li>
+</ul>
+<h3 id="1-2-名詞">1.2 名詞</h3>
+<div class="tbl"><table><thead><tr>
+<th>名詞</th>
+<th>本框架的定義</th>
+<th>依據</th>
+</tr>
+</thead><tbody><tr>
+<td>角色（role）</td>
+<td>一組目的＋責任＋邊界，<strong>跟填它的人分開</strong>。一個人可以戴多頂帽子</td>
+<td>Holacracy、Sociocracy 3.0 <span class="tag F">F</span></td>
+</tr>
+<tr>
+<td>決策領域</td>
+<td>一類反覆出現的決定，例如「活動預算 5 千元以下的動支」。<strong>不是單一任務</strong></td>
+<td>Appelo 2011 <span class="tag F">F</span></td>
+</tr>
+<tr>
+<td>授權方（A）</td>
+<td>對該領域結果負最終責任的角色；每列只有一個</td>
+<td>GitLab「only one person accountable」<span class="tag F">F</span></td>
+</tr>
+<tr>
+<td>承接方（R）</td>
+<td>實際推動、做事的角色；可以多個，但建議一個主責</td>
+<td>RACI 慣例 <span class="tag E">E</span></td>
+</tr>
+<tr>
+<td>授權等級</td>
+<td>A 與 R 之間「誰決定」的程度，1–7 級</td>
+<td>Management 3.0 <span class="tag F">F</span></td>
+</tr>
+<tr>
+<td>課責</td>
+<td>授權後<strong>由雙方共享</strong>：承接方對成果負責，授權方對「授權給誰、授權多少」負責</td>
+<td>S3 Principle of Accountability <span class="tag F">F</span>。「accountability 不可轉授」沒有單一權威出處，不採用這個說法</td>
+</tr>
+<tr>
+<td>護欄</td>
+<td>承接方可以自行處理的範圍（金額、時程、範圍偏差），超出才升級</td>
+<td>PRINCE2 tolerances <span class="tag E">E</span></td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="2-核心工具一-權責地圖-raci-×-授權等級">2. 核心工具一：權責地圖（RACI × 授權等級）</h2>
+<h3 id="2-1-一列長什麼樣">2.1 一列長什麼樣</h3>
+<div class="tbl"><table><thead><tr>
+<th>欄位</th>
+<th>內容</th>
+<th>規則</th>
+</tr>
+</thead><tbody><tr>
+<td>決策領域</td>
+<td>一類反覆出現的決定</td>
+<td>用「動詞＋對象＋範圍」寫，例如「核准 5 千元以下活動支出」</td>
+</tr>
+<tr>
+<td>授權方 A</td>
+<td>一個角色</td>
+<td><strong>恰好一個</strong>；寫角色不寫部門</td>
+</tr>
+<tr>
+<td>承接方 R</td>
+<td>一個主責角色（可加協作者）</td>
+<td>至少一個</td>
+</tr>
+<tr>
+<td>授權等級（宣告）</td>
+<td>1–7</td>
+<td>見 2.2</td>
+</tr>
+<tr>
+<td>授權等級（實際）</td>
+<td>1–7 或 DK</td>
+<td>由健檢時觀察或投票得出</td>
+</tr>
+<tr>
+<td>諮詢 C</td>
+<td>A、R 以外、決定前要問的角色</td>
+<td>越少越好</td>
+</tr>
+<tr>
+<td>告知 I</td>
+<td>A、R 以外、決定後要通知的角色</td>
+<td>只列需要據此行動的人</td>
+</tr>
+<tr>
+<td>護欄</td>
+<td>金額／時程／範圍的上限</td>
+<td>超出就升級給 A</td>
+</tr>
+<tr>
+<td>同步需求</td>
+<td>同步／非同步／預先授權</td>
+<td>見 R6</td>
+</tr>
+<tr>
+<td>法定下限</td>
+<td>若有，寫法源</td>
+<td>見 R5</td>
+</tr>
+<tr>
+<td>上次回顧</td>
+<td>日期</td>
+<td>至少每次換屆一次</td>
+</tr>
+</tbody></table></div>
+<h3 id="2-2-授權等級-白話七級">2.2 授權等級：白話七級</h3>
+<p>沿用 Management 3.0 的 1–7 編號（方便直接用卡片玩 Delegation Poker），但換成白話。<strong>「A」指授權方，「R」指承接方。</strong></p>
+<div class="tbl"><table><thead><tr>
+<th>級</th>
+<th>M3.0 原名</th>
+<th>白話</th>
+<th>誰決定</th>
+<th>送審的意義</th>
+</tr>
+</thead><tbody><tr>
+<td>1</td>
+<td>Tell</td>
+<td>A 決定，告訴 R</td>
+<td>A</td>
+<td>R 沒有提案權</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Sell</td>
+<td>A 決定，說服 R</td>
+<td>A</td>
+<td>同上，但要說明理由</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Consult</td>
+<td>A 決定，但先聽 R 的意見</td>
+<td>A</td>
+<td>R 提案，A 可以改或否決</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Agree</td>
+<td>A 和 R 一起決定</td>
+<td>雙方</td>
+<td>雙方都同意才成立</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Advise</td>
+<td>R 決定，A 給建議</td>
+<td>R</td>
+<td>A 的意見不具約束力</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Inquire</td>
+<td>R 決定，事後告訴 A</td>
+<td>R</td>
+<td><strong>不應送審</strong>，改為事後通知</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Delegate</td>
+<td>R 全權決定，A 不需要知道</td>
+<td>R</td>
+<td>不送審、不通知</td>
+</tr>
+<tr>
+<td>DK</td>
+<td>—</td>
+<td>不知道</td>
+<td>—</td>
+<td>健檢訊號：角色不清</td>
+</tr>
+</tbody></table></div>
+<p>注意事項：</p>
+<ul>
+<li><strong>「建議」最容易混淆</strong>：M3.0 的 5 Advise 是「R 決定」，但 Hyatt 五級的「Research and recommend」是主管決定。本框架的第 5 級一律指「R 決定」。<span class="tag I">F→I</span></li>
+<li><strong>1 級其實不算授權</strong>（Appelo 原文說 Tell「actually not delegation at all」）。<span class="tag F">F</span></li>
+<li>小型 NPO 多數決策預期落在 <strong>3–6 級</strong>。<span class="tag I">I</span></li>
+<li><strong>DK 代碼</strong>取自 Responsibility Charting，用來區分「沒角色」和「不知道自己有沒有角色」，對年度制、換屆頻繁的組織特別有用。<span class="tag I">F→I</span></li>
+<li>卡片授權：Management 3.0 卡片<strong>不是 Creative Commons</strong>，官方只寫「Re-selling is not permitted」，服務條款禁止未經書面同意複製。內部列印使用可以；<strong>把卡片內容改寫後公開，需先取得同意</strong>。本文件只引用等級名稱，不重製卡面。<span class="tag F">F</span></li>
+</ul>
+<h3 id="2-3-怎麼建立-responsibility-charting-五步流程">2.3 怎麼建立：Responsibility Charting 五步流程</h3>
+<p>依 Gilmore &amp; Nelson 的流程，配合 Delegation Poker：</p>
+<ol>
+<li><strong>列決策領域</strong>：先挑 10–15 個「最常卡住或最常吵」的。TNTP 建議只對 5–10 個重要決策做矩陣，不做全部任務。<span class="tag E">E</span></li>
+<li><strong>約定共同語言</strong>：用 2.2 的 1–7 級＋DK。</li>
+<li><strong>個別投票</strong>：每列由 A、R 及相關人各自出牌或填匿名表單，<strong>先不討論</strong>。</li>
+<li><strong>統計分歧、回饋協商</strong>：差距 ≥ 2 級或出現 DK 的列優先討論；協商出宣告等級與護欄。</li>
+<li><strong>行動與追蹤</strong>：寫入地圖、對應到管理工具的送審設定，下次換屆或三個月後回顧。</li>
+</ol>
+<p>設計前提：</p>
+<ul>
+<li><strong>共同建立，不由一人畫好再發下去</strong>（HBR 2026 Greer 等人列的常見錯誤之一）。<span class="tag F">F</span></li>
+<li>如果以遊戲形式進行，要<strong>自願參加</strong>；研究顯示工作中的遊戲在參與者同意時才有正面效果（Mollick &amp; Rothbard）。<span class="tag I">F→I</span></li>
+</ul>
+<h3 id="2-4-權責地圖的機械檢查-可做成試算表公式">2.4 權責地圖的機械檢查（可做成試算表公式）</h3>
+<div class="tbl"><table><thead><tr>
+<th>檢查</th>
+<th>規則</th>
+<th>依據</th>
+</tr>
+</thead><tbody><tr>
+<td>每列 A = 1</td>
+<td>0 個或 2 個以上都要處理</td>
+<td>RACI 慣例、GitLab、RAPID「only one person has the D」<span class="tag F">F</span></td>
+</tr>
+<tr>
+<td>每列 R ≥ 1</td>
+<td>沒有 R 表示沒人推動</td>
+<td>TNTP <span class="tag E">E</span></td>
+</tr>
+<tr>
+<td>C 太多</td>
+<td>一列 C ≥ 3 就問「多問這些人值得嗎」</td>
+<td>TNTP <span class="tag E">E</span>；門檻 3 為建議值 <span class="tag I">I</span></td>
+</tr>
+<tr>
+<td>一個角色的 A 太多</td>
+<td>一人持有 &gt; 1/3 的 A 就標瓶頸</td>
+<td>UW IT、TNTP <span class="tag E">E</span>；門檻為建議值 <span class="tag I">I</span></td>
+</tr>
+<tr>
+<td>多人有否決權</td>
+<td>RAPID 原文：很多人都得同意，通常表示決策沒有下放夠遠</td>
+<td>HBR 2006 <span class="tag F">F</span></td>
+</tr>
+<tr>
+<td>宣告 vs 實際差 ≥ 2 級</td>
+<td>標「授權落差」</td>
+<td>Delegation Poker 原理 <span class="tag I">I</span></td>
+</tr>
+<tr>
+<td>第 6–7 級卻要送審</td>
+<td>流程與宣告不一致</td>
+<td><span class="tag I">I</span></td>
+</tr>
+<tr>
+<td>DK 比例</td>
+<td>一列有人填 DK 即需釐清</td>
+<td>Responsibility Charting <span class="tag I">F→I</span></td>
+</tr>
+</tbody></table></div>
+<h3 id="2-5-起手式-小型-npo-常見的決策領域">2.5 起手式：小型 NPO 常見的決策領域</h3>
+<p>以下只列「決策領域」與「常見的 A」，<strong>授權等級刻意留空</strong>，請自己投票。<span class="tag I">I</span></p>
+<div class="tbl"><table><thead><tr>
+<th>#</th>
+<th>決策領域</th>
+<th>常見的 A</th>
+<th>常見的 R</th>
+<th>法定下限</th>
+</tr>
+</thead><tbody><tr>
+<td>1</td>
+<td>年度工作計畫與預算</td>
+<td>理事會（大會通過）</td>
+<td>執行長</td>
+<td>人民團體法第 34 條</td>
+</tr>
+<tr>
+<td>2</td>
+<td>部門預算內的支出動支（分金額級距）</td>
+<td>部門主管／執行長</td>
+<td>部門成員</td>
+<td>社會團體財務處理辦法第 17 條（提款三方用印）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>付款與報帳</td>
+<td>財務</td>
+<td>各部門</td>
+<td>同上；勸募款 ≥ 1 萬元不得用現金</td>
+</tr>
+<tr>
+<td>4</td>
+<td>勸募款專案的範圍變更與結案</td>
+<td>理事會</td>
+<td>執行長</td>
+<td>公益勸募條例第 19、20 條</td>
+</tr>
+<tr>
+<td>5</td>
+<td>對外合作與簽約</td>
+<td>執行長／營運主管</td>
+<td>承辦部門</td>
+<td>依章程</td>
+</tr>
+<tr>
+<td>6</td>
+<td>對外發言與社群發文</td>
+<td>行銷公關主管</td>
+<td>行銷公關志工</td>
+<td>—</td>
+</tr>
+<tr>
+<td>7</td>
+<td>課程或服務內容的版本</td>
+<td>業務部門主管</td>
+<td>承辦專員</td>
+<td>—</td>
+</tr>
+<tr>
+<td>8</td>
+<td>合作單位（例如學校）與排程</td>
+<td>業務部門主管</td>
+<td>承辦專員</td>
+<td>—</td>
+</tr>
+<tr>
+<td>9</td>
+<td>服務志工（例如講師）招募、培訓與退出</td>
+<td>業務部門主管</td>
+<td>承辦專員</td>
+<td>志願服務法第 9 條（若為運用單位）</td>
+</tr>
+<tr>
+<td>10</td>
+<td>活動企劃與執行</td>
+<td>活動主管</td>
+<td>活動志工</td>
+<td>—</td>
+</tr>
+<tr>
+<td>11</td>
+<td>核心志工招募、分派與退出</td>
+<td>營運主管</td>
+<td>各部門主管</td>
+<td>—</td>
+</tr>
+<tr>
+<td>12</td>
+<td>新專案立項</td>
+<td>?</td>
+<td>提案者</td>
+<td>—</td>
+</tr>
+<tr>
+<td>13</td>
+<td>任務建立與指派</td>
+<td>?</td>
+<td>各部門</td>
+<td>—</td>
+</tr>
+<tr>
+<td>14</td>
+<td>目標（OKR）設定與核准</td>
+<td>?</td>
+<td>各部門</td>
+<td>—</td>
+</tr>
+<tr>
+<td>15</td>
+<td>工具權限開通與回收（雲端硬碟、筆記、通訊、管理工具）</td>
+<td>營運主管</td>
+<td>行政或營運部門</td>
+<td>個資法現行第 27 條</td>
+</tr>
+<tr>
+<td>16</td>
+<td>個資檔案（名單、受益者資料）的存取</td>
+<td>?</td>
+<td>持有部門</td>
+<td>同上</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="3-核心工具二-角色卡">3. 核心工具二：角色卡</h2>
+<h3 id="3-1-欄位">3.1 欄位</h3>
+<p>以 Sociocracy 3.0 的 Domain Description 為骨架（CC BY-SA 4.0，可改寫但需署名與標示修改，見 3.3），加上 NCVO 志工角色說明的「邊界」與「時間」欄。</p>
+<div class="tbl"><table><thead><tr>
+<th>欄位</th>
+<th>要寫什麼</th>
+<th>來源</th>
+</tr>
+</thead><tbody><tr>
+<td>角色名稱</td>
+<td>例如「財務（由執行長兼任）」</td>
+<td>—</td>
+</tr>
+<tr>
+<td>目的</td>
+<td>這個角色為什麼存在，一句話</td>
+<td>S3 Purpose</td>
+</tr>
+<tr>
+<td>主要責任</td>
+<td>3–7 條，用動詞開頭</td>
+<td>S3 Key Responsibilities</td>
+</tr>
+<tr>
+<td>服務對象與產出</td>
+<td>誰需要它的產出、產出什麼</td>
+<td>S3 Customers and Deliverables</td>
+</tr>
+<tr>
+<td>擁有的決策領域</td>
+<td>連到權責地圖的列號與授權等級</td>
+<td>本框架</td>
+</tr>
+<tr>
+<td>邊界</td>
+<td>不做什麼、不能決定什麼</td>
+<td>NCVO role boundaries</td>
+</tr>
+<tr>
+<td>授權方的承諾</td>
+<td>上層會提供什麼支援，例如「24 小時內回覆問題」</td>
+<td>S3 Delegator Responsibilities</td>
+</tr>
+<tr>
+<td>依賴</td>
+<td>需要誰的什麼</td>
+<td>S3 Dependencies</td>
+</tr>
+<tr>
+<td>可用時段與回應承諾</td>
+<td>例如「平日白天；訊息 1 個工作天內回覆」</td>
+<td>NCVO hours <span class="tag F">F</span>；回應承諾為 <span class="tag I">I</span></td>
+</tr>
+<tr>
+<td>工具權限</td>
+<td>需要哪些系統的什麼權限</td>
+<td>本框架（R7）</td>
+</tr>
+<tr>
+<td>任期與交接</td>
+<td>任期、交接對象、交接資料位置</td>
+<td>S3 role 有限任期 <span class="tag F">F</span></td>
+</tr>
+<tr>
+<td>下次檢視日</td>
+<td>日期</td>
+<td>S3 Evaluation Schedule</td>
+</tr>
+</tbody></table></div>
+<p>S3 建議時間緊時先寫五欄：目的、主要責任、服務對象與產出、授權方的承諾、下次檢視日。<span class="tag F">F</span></p>
+<h3 id="3-2-兼任角色-一頂帽子一張卡">3.2 兼任角色：一頂帽子一張卡</h3>
+<ul>
+<li>例如執行長兼財務 → 「執行長」與「財務」兩張卡；營運長兼兩個部門主管 → 「營運長」與兩張「部門主管（代理）」卡。<span class="tag I">I</span></li>
+<li>理由：Holacracy 與 S3 都把角色與人分開。<span class="tag F">F</span> 分開寫才看得出<strong>哪頂帽子負荷最重、哪頂帽子將來可以交出去</strong>；找到新主管時，整張卡可以直接移交。<span class="tag I">I</span></li>
+<li>健檢重點：同一人的兩頂帽子是否互相制衡。例如「核准支出」與「執行付款」若在同一人身上，就是 R5 的職能分工問題。<span class="tag I">I</span></li>
+</ul>
+<h3 id="3-3-授權標註">3.3 授權標註</h3>
+<p>角色卡模板引用 S3 時，文件需加註（S3 官方建議格式），例如：</p>
+<blockquote>
+<p>This work, &quot;角色卡&quot;, is a derivative of &quot;A Practical Guide for Evolving Agile and Resilient Organizations with Sociocracy 3.0&quot; by James Priest, Bernhard Bockelbrink and Liliana David used under CC BY SA. &quot;角色卡&quot; is licensed under CC BY SA by ［你的名字或組織］.</p>
+</blockquote>
+<hr>
+<h2 id="4-健檢面向與成熟度">4. 健檢面向與成熟度</h2>
+<p>每個面向都有：成熟度描述、指標、檢核問題、依據。</p>
+<h3 id="r1-角色清楚度">R1 角色清楚度</h3>
+<ul>
+<li><strong>成熟度</strong><ul>
+<li>1：角色只存在於口頭與名單上的職稱。</li>
+<li>2：部分角色有說明，但兼任角色沒拆開，內容與實際不符。</li>
+<li>3：每頂帽子都有角色卡，換屆時更新。</li>
+<li>4：角色卡每學期或每半年檢視，並依健檢資料調整。</li>
+</ul>
+</li>
+<li><strong>指標</strong>：有角色卡的帽子比例；權責地圖中 DK 的比例。</li>
+<li><strong>檢核問題</strong>：你能用一句話說出自己每頂帽子的目的嗎？有沒有你以為是別人負責、但對方不這麼認為的事？</li>
+<li><strong>依據</strong>：角色模糊與績效的校正後相關 ρ = −.24（Gilboa 2008，k=114，員工樣本，異質性大）<span class="tag F">F</span>。志工的 role ambiguity 證據較薄。<span class="tag E">E</span></li>
+</ul>
+<h3 id="r2-決策權清楚度">R2 決策權清楚度</h3>
+<ul>
+<li><strong>成熟度</strong><ul>
+<li>1：遇到事情才問「這誰決定？」</li>
+<li>2：部分決策有慣例，但沒寫下來；不同人說法不一。</li>
+<li>3：有權責地圖，每列一個 A、有宣告等級與護欄。</li>
+<li>4：地圖定期回顧，並用送審與升級資料修正。</li>
+</ul>
+</li>
+<li><strong>指標</strong>：權責地圖覆蓋的決策領域數；每列 A = 1 的比例；投票分歧 ≥ 2 級的列數。</li>
+<li><strong>檢核問題</strong>：過去一個月，有沒有事情因為「不知道誰能拍板」而延誤？</li>
+<li><strong>依據</strong>：McKinsey 2019 調查中，自評「決策在正確層級做出」的受訪者，在績優組的機率高 6.8 倍（n=1,259，高階主管自陳，相關性）<span class="tag F">F</span>。</li>
+</ul>
+<h3 id="r3-授權落差-雙向">R3 授權落差（雙向）</h3>
+<ul>
+<li><strong>成熟度</strong><ul>
+<li>1：說「你決定就好」，事後卻推翻；或完全放手、不跟進。</li>
+<li>2：知道有落差，但只在出事時處理。</li>
+<li>3：宣告等級與實際行為定期比對；落差有處理紀錄。</li>
+<li>4：授權等級隨能力與信任調整，並在交接時移交等級紀錄。</li>
+</ul>
+</li>
+<li><strong>指標</strong>：送審退回或修改率（依決策領域）；宣告第 5–7 級但被事後推翻的次數；宣告第 1–3 級但實際無人審的次數。</li>
+<li><strong>檢核問題</strong>：你上次被說「你決定」之後，決定有被改掉嗎？你有沒有覺得被放生、不知道怎樣算做好？</li>
+<li><strong>依據</strong>：<ul>
+<li>De Clerck 2023（355 位運動社團志工，橫斷式）：兩種領導風格同時放入模型時，只有<strong>混亂式領導</strong>（β=.49）預測離開意圖，自主支持不再顯著 <span class="tag F">F</span>。所以「放手」不等於「不清楚」。</li>
+<li>Forner 2023 志工 meta-analysis（117 篇）：工作自主性與留任意圖 ρ = .46（k=7），但與離開意圖不顯著 <span class="tag F">F</span>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="r4-負荷與瓶頸">R4 負荷與瓶頸</h3>
+<ul>
+<li><strong>成熟度</strong><ul>
+<li>1：所有事都等少數主管。</li>
+<li>2：知道誰是瓶頸，但沒調整。</li>
+<li>3：每個角色的 A 數有上限；低風險決策已下放到第 5–6 級。</li>
+<li>4：定期看核准等待時間，持續把決策往下推。</li>
+</ul>
+</li>
+<li><strong>指標</strong>：每人持有的 A 數；送審的中位等待時間；兼任帽子數。</li>
+<li><strong>檢核問題</strong>：如果最忙的兩位主管請假兩週，哪些事會停？</li>
+<li><strong>依據</strong>：HBR 2006 RAPID：「If many people must agree, you probably haven&#39;t pushed decisions down far enough」<span class="tag F">F</span>；HBR 2026 建議主管每年只保留約四個自己當 A 的決策 <span class="tag F">F</span>。</li>
+</ul>
+<h3 id="r5-分工制衡與法定下限">R5 分工制衡與法定下限</h3>
+<ul>
+<li><strong>成熟度</strong><ul>
+<li>1：同一人提出、核准、執行付款；不知道法定要求。</li>
+<li>2：知道法定要求，但有例外未處理。</li>
+<li>3：法定下限清單逐項對到角色；人手不足處有替代控制。</li>
+<li>4：監事會定期查核，並有書面紀錄。</li>
+</ul>
+</li>
+<li><strong>法定下限（社會團體，摘要）</strong>：<ul>
+<li>提用存款須<strong>負責人、秘書長或總幹事、財務人員三方共同蓋章</strong>（社會團體財務處理辦法第 17 條）<span class="tag F">F</span>。如果理事長、執行長、財務實際上是同一人，等於沒有制衡。<span class="tag I">I</span></li>
+<li>財務查核由監事會為之（同辦法第 22 條）<span class="tag F">F</span>。</li>
+<li>社會團體理監事會每六個月至少開會一次（人民團體法第 43 條，優先於第 29 條的每三個月）<span class="tag F">F</span>，所以<strong>日常核准不能設計成等理事會</strong>。<span class="tag I">I</span></li>
+<li>若有勸募：勸募款依許可的計畫使用，結案後 30 日內經理事會通過並公開徵信（公益勸募條例第 19、20 條）<span class="tag F">F</span>。</li>
+<li>個資：非公務機關應採適當安全措施（個資法現行第 27 條；2025 年修正後改列第 20-1 條，但<strong>施行日期未定</strong>，截至 2026-10 現行版仍有效）<span class="tag F">F</span>。</li>
+<li>一般任務與 OKR 的核准，法律沒有規定，屬於章程與內規。<span class="tag F">F</span></li>
+</ul>
+</li>
+<li><strong>替代控制</strong>：人手不足無法分工時，COSO 2013：「Where segregation of duties is not practical, management selects and develops alternative control activities.」<span class="tag E">E</span>。英國 Charity Commission CC8：「a different person authorising a transaction to the person who made it」<span class="tag F">F</span>。</li>
+</ul>
+<h3 id="r6-專職-×-志工時段協作">R6 專職 × 志工時段協作</h3>
+<ul>
+<li><strong>問題</strong>：專職的工作時段（平日白天）與學生志工（晚上、週末、配合課表與考試）對不上，變成互相犧牲：專職晚上加班，或志工白天配合。</li>
+<li><strong>研究告訴我們的</strong>：<ul>
+<li>時間是志工不參與與離開的最大原因。NCVO 2023：表示不太可能繼續的志工中，37% 選「時間變少」，只有 10% 是不滿組織或管理 <span class="tag F">F</span>。</li>
+<li>專職對志工的經驗也會回頭影響專職：對志工經驗較差的員工，壓力、工作負荷與離職意圖都較高，控制整體工作滿意度後仍成立（Rogelberg 2010，N=270）<span class="tag F">F</span>。所以「專職犧牲」不只是專職個人的事。</li>
+<li><strong>「時段落差」本身沒有被直接研究過</strong>；「授權可以減少同步需求」也沒有量測研究，只有實務做法 <span class="tag F">F</span>。本節的因果是 <span class="tag I">I</span>。</li>
+<li>非同步協作的實務（GitLab、37signals、Doist、Shape Up）一致主張「寫下來再開會」，但也都警告<strong>純非同步會失靈</strong>：決策只剩「最終一致」、人際連結流失。Doist 去掉多數會議後，又補回 1-on-1 與週會 <span class="tag F">F</span>。</li>
+</ul>
+</li>
+<li><strong>假說</strong>：時段落差之所以變成犧牲，是因為太多事需要同步：同步開會、同步核准。授權等級越低（1–4 級），越需要 A 和 R 同時在線。<span class="tag I">I</span></li>
+<li><strong>三層介入</strong>（依成本由低到高）<ol>
+<li><strong>縮小同步需求</strong>：寫下來再開會、先問「能否非同步」、錄影＋書面摘要、會後 24–48 小時的決策補充期、固定的每週進度自動回報。</li>
+<li><strong>固定少量同步</strong>：每週一個固定的重疊時段，只放真正需要同步的事；重要議題可開白天、晚上兩場。<strong>把犧牲明碼標價</strong>：明定重疊時段在白天還是晚上、由誰負擔，專職的晚間時數依法處理。</li>
+<li><strong>用授權取代同步核准</strong>：在權責地圖上標同步需求；用護欄讓志工在範圍內先做；以學期為週期一次決定、期間不插隊；考試週前降載。</li>
+</ol>
+</li>
+<li><strong>志工小組長（liaison）</strong>：作為白天專職與晚上志工的介面（New York Cares 個案）<span class="tag F">F</span>。是否需要這一層取決於志工人數與分組；若設置，小組長本身要有角色卡，負擔也要納入 R4。<span class="tag I">I</span></li>
+<li><strong>同步需求三分類</strong>（寫在權責地圖的欄位）<ul>
+<li><strong>同步</strong>：需要即時討論，例如衝突處理、首次協商授權等級。</li>
+<li><strong>非同步</strong>：文件留言、錄影加書面回饋即可。</li>
+<li><strong>預先授權</strong>：在護欄內先做，事後告知（第 6 級）。</li>
+</ul>
+</li>
+<li><strong>成熟度</strong><ul>
+<li>1：每件事都約會議；誰配合誰靠個人犧牲。</li>
+<li>2：有固定會議時段，但核准與討論仍常卡在時段落差。</li>
+<li>3：每個決策領域標了同步需求；有固定重疊時段且負擔方明確；其餘預設非同步，有書面紀錄。</li>
+<li>4：定期看跨時段等待時間與專職下班時段工時，持續把事情移出同步區。</li>
+</ul>
+</li>
+<li><strong>指標</strong>：一週內需要專職參加的晚上或週末場次；志工在上課時段被要求出席的次數；跨時段核准的等待時間；可以非同步卻開了會的比例；專職每月延長工時（只看彙總，不評價個人）。</li>
+<li><strong>檢核問題</strong>：上個月有哪些會議，其實寫一段文字就能解決？哪些事因為等某人上線而停了一晚以上？</li>
+<li><strong>勞動面</strong>：專職配合晚間、週末屬延長工時，依《勞動基準法》第 32 條須經工會或勞資會議同意，連同正常工時一日不得超過 12 小時，延長工時每月不得超過 46 小時（經同意可到 54 小時、三個月 138 小時）；加班費依第 24 條；補休須勞工自願（第 32-1 條）<span class="tag F">F</span>。</li>
+</ul>
+<h3 id="r7-權限與交接">R7 權限與交接</h3>
+<ul>
+<li><strong>成熟度</strong><ul>
+<li>1：換屆時沒有固定交接；前任志工仍保有工具權限。</li>
+<li>2：有交接，但只交檔案和帳密。</li>
+<li>3：換屆時更新角色卡、移交權責地圖中的授權等級、依角色開關權限，並做一次權限盤點。</li>
+<li>4：權限依角色自動開關；交接後追蹤接任者前幾週的卡關情況。</li>
+</ul>
+</li>
+<li><strong>指標</strong>：前任志工仍有權限的帳號數；換屆後角色卡更新率；交接清冊完成率。</li>
+<li><strong>檢核問題</strong>：去年離開的志工，現在還能打開哪些共享資料夾或筆記頁面？</li>
+<li><strong>依據</strong>：<ul>
+<li>權限回收是志工組織的結構性弱點：開權限很快，收回常沒人做（廠商文章）<span class="tag E">E</span>。一手事故案例是 CISA AA24-046A：前員工的管理員帳號未停用，被用來入侵（員工非志工）<span class="tag F">F</span>。</li>
+<li>台灣學生社團交接制度可參考中山大學《學生社團交接要點》：偏檔案、財產、帳密，<strong>交接完成才發幹部證書</strong> <span class="tag F">F</span>。交接成效<strong>沒有實證研究</strong> <span class="tag F">F</span>。</li>
+</ul>
+</li>
+<li><strong>年度制組織的特殊處</strong>：每年都有一次大規模的「離任＋到任」。授權等級要隨角色移交，但<strong>信任不會自動移交</strong>；新任者的授權起點要重新設定。<span class="tag I">I</span></li>
+</ul>
+<h3 id="r8-工時紀錄與監控設計">R8 工時紀錄與監控設計</h3>
+<ul>
+<li><strong>問題</strong>：管理工具常有計時器、工時、工作日誌與審核。對志工使用時，可能讓志願服務變得「像一份工作」。</li>
+<li><strong>研究告訴我們的</strong>：<ul>
+<li>監控沒有提升績效（ρ ≈ .00），且與壓力上升相關（ρ = .16）（Ravid 2023，K=94，員工樣本）<span class="tag F">F</span>。</li>
+<li><strong>組織宣稱「這是為了成長」不會改變效果</strong>：告知的目的沒有調節作用。有證據改善態度的是：被監控者有控制權、非同步收集、透明說明收集了什麼、範圍小（但都沒有證據能降低壓力）<span class="tag F">F</span>。</li>
+<li><strong>沒有任何研究直接探討志工被計時</strong>。間接證據：把時間當計費單位會降低志願服務意願（DeVoe &amp; Pfeffer 2010）；強制服務時數會降低日後意圖（Stukas 1999）；量化會讓活動感覺像工作（Etkin 2016）[E，皆為摘要]。</li>
+<li>《志願服務法》的「服務時數」是認證時數，不含往返時間，與管理工具的工時不同層 <span class="tag F">F</span>。</li>
+</ul>
+</li>
+<li><strong>設計原則</strong> <span class="tag I">I</span><ol>
+<li>計時的理由是規劃與看見負荷，不是督促。</li>
+<li>個人明細預設只有本人看得到；主管看彙總；工時不進考核、不排名。</li>
+<li>志工可以自己開始、停止、修改、刪除，也可以只填大約時數。</li>
+<li>不提供「誰正在計時」的即時狀態。</li>
+<li>不設最低時數、不以時數換獎勵。</li>
+<li>優先對營運類任務計時，不量化備課、討論這類本來有樂趣的活動。</li>
+<li>但工時資料應該被用來發現過載、重新分工，否則會滑向「混亂式放任」。</li>
+<li>導入前後各做一次 4–8 題的短問卷，並標明樣本數。</li>
+</ol>
+</li>
+<li><strong>成熟度</strong><ul>
+<li>1：計時與送審規則沒說明，由各人猜測用途。</li>
+<li>2：有說明用途，但資料可見範圍與考核關係不清楚。</li>
+<li>3：書面寫明誰看得到什麼、不用於考核；志工可控制自己的紀錄。</li>
+<li>4：定期用短問卷與工時彙總檢查負荷與感受，並據以調整。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="5-對任務管理工具的設計建議">5. 對任務管理工具的設計建議</h2>
+<ol>
+<li><strong>送審要對應到決策領域與授權等級。</strong> 第 6–7 級的事項不送審，改為事後通知；第 3–5 級才送審，且送審畫面要說明審核者能不能否決。<span class="tag I">I</span></li>
+<li><strong>記錄審核資料</strong>：送出時間、核准時間、退回或修改。這是 R3、R4 唯一能量化的資料來源。<span class="tag I">I</span></li>
+<li><strong>審核者單一化</strong>：每類送審只有一個 A；HBR 2006 指出多人否決表示決策沒有下放夠遠。<span class="tag I">F→I</span></li>
+<li><strong>審核分級</strong>：依風險決定要不要審，不要所有變更同等處理（DORA 研究發現重量級外部審核與軟體交付績效負相關，屬類比）。<span class="tag I">E→I</span></li>
+<li><strong>計時器採 R8 的設計原則。</strong> <span class="tag I">I</span></li>
+<li><strong>「不需審核」不一定是 bug</strong>：例如「建立新任務」不需審核，可能正好是第 6 級事項的合理入口；要先定義該動作屬於哪一級，再決定行為。<span class="tag I">I</span></li>
+</ol>
+<hr>
+<h2 id="6-導入步驟">6. 導入步驟</h2>
+<div class="tbl"><table><thead><tr>
+<th>步驟</th>
+<th>做什麼</th>
+<th>誰</th>
+<th>產出</th>
+</tr>
+</thead><tbody><tr>
+<td>1</td>
+<td>和主責主管確認範圍、目的與用途（<strong>不用於考核</strong>）</td>
+<td>推動者、主責主管</td>
+<td>共識</td>
+</tr>
+<tr>
+<td>2</td>
+<td>寫專職人員的角色卡初稿（一頂帽子一張），請本人修改</td>
+<td>推動者</td>
+<td>角色卡</td>
+</tr>
+<tr>
+<td>3</td>
+<td>挑 10–15 個決策領域，做第一次 Delegation Poker／匿名投票</td>
+<td>全體專職</td>
+<td>權責地圖 v1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>對照管理工具的送審設定與法定下限清單</td>
+<td>推動者</td>
+<td>落差清單</td>
+</tr>
+<tr>
+<td>5</td>
+<td>志工層：各部門挑 3–5 個與志工有關的決策領域，加做一輪</td>
+<td>部門主管＋志工代表</td>
+<td>權責地圖 v1.1</td>
+</tr>
+<tr>
+<td>6</td>
+<td>跑一次 R1–R8 自評，並做時段與計時的短問卷</td>
+<td>全員自願</td>
+<td>健檢報告 v1</td>
+</tr>
+<tr>
+<td>7</td>
+<td>三個月後回顧；換屆時重新投票</td>
+<td>推動者</td>
+<td>回顧紀錄</td>
+</tr>
+</tbody></table></div>
+<p>健檢工具共同的使用前提（Atlassian、Spotify 都明說）：<strong>團隊自評、不跨部門比較、不拿來考核</strong>。Spotify 甚至警告成熟度模型可能變成「a systemic tool of oppression」。<span class="tag F">F</span></p>
+<hr>
+<h2 id="7-紅旗">7. 紅旗</h2>
+<div class="tbl"><table><thead><tr>
+<th>#</th>
+<th>紅旗</th>
+<th>對應</th>
+</tr>
+</thead><tbody><tr>
+<td>T1</td>
+<td>某類決策沒有人能拍板，或有兩個以上的人都覺得自己能拍板</td>
+<td>R2</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>「你決定」之後又被推翻，或完全放手不跟進</td>
+<td>R3</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>主管請假一週，多個部門的工作就停擺</td>
+<td>R4</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>同一人提出、核准、執行付款，且沒有替代控制</td>
+<td>R5</td>
+</tr>
+<tr>
+<td>T5</td>
+<td>勸募款專案的變更或結案沒有經理事會</td>
+<td>R5</td>
+</tr>
+<tr>
+<td>T6</td>
+<td>專職常態性晚間、週末加班配合志工卻沒有加班費或補休紀錄，或志工常被要求白天出席</td>
+<td>R6</td>
+</tr>
+<tr>
+<td>T7</td>
+<td>去年離開的志工仍可存取含個資的資料夾</td>
+<td>R7</td>
+</tr>
+<tr>
+<td>T8</td>
+<td>工時資料被用來比較或評價個別志工</td>
+<td>R8</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="8-之後的模組-預告">8. 之後的模組（預告）</h2>
+<div class="tbl"><table><thead><tr>
+<th>模組</th>
+<th>範圍</th>
+<th>主要參考</th>
+</tr>
+</thead><tbody><tr>
+<td>二：流程與節奏</td>
+<td>會議、看板、WIP、例外管理、升級路徑</td>
+<td>Kanban Guide 2025、PRINCE2 tolerances</td>
+</tr>
+<tr>
+<td>三：目標與優先序</td>
+<td>OKR 品質、與年度計畫的連結</td>
+<td>Google re:Work、上位框架 D1</td>
+</tr>
+<tr>
+<td>四：工具與資料</td>
+<td>管理工具資料品質、權限模型（RBAC）、儀表板</td>
+<td>NIST RBAC、上位框架 D8</td>
+</tr>
+<tr>
+<td>五：交接與知識</td>
+<td>換屆、SOP、決策紀錄</td>
+<td>學生社團交接要點</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="9-證據強度與限制">9. 證據強度與限制</h2>
+<ul>
+<li><strong>授權等級的實證</strong>：沒有任何同儕審查研究直接檢驗 Delegation Poker 或七級；支持來自心理賦能、自主性與志工留任的相關研究，多為員工樣本或橫斷式。<span class="tag F">F</span></li>
+<li><strong>RACI 的實證</strong>：只找到兩篇，都沒有對照組。<span class="tag F">F</span></li>
+<li><strong>志工被計時</strong>：確認是研究缺口。<span class="tag F">F</span></li>
+<li><strong>文化適用性</strong>：授權模型多源自西方企業或軍隊，台灣大學生志工情境沒有相關研究。<span class="tag H">H</span></li>
+<li><strong>搜尋限制</strong>：部分來源被付費牆擋住，只讀到摘要。</li>
+</ul>
+<hr>
+<h2 id="附錄-權責地圖範本">附錄：權責地圖範本</h2>
+<div class="tbl"><table><thead><tr>
+<th>#</th>
+<th>決策領域</th>
+<th>A</th>
+<th>R</th>
+<th>宣告等級</th>
+<th>實際等級</th>
+<th>C</th>
+<th>I</th>
+<th>護欄</th>
+<th>同步需求</th>
+<th>法定下限</th>
+<th>上次回顧</th>
+</tr>
+</thead><tbody><tr>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table></div>
+
+<footer>v0.1 草稿。作者 d9nielworking，研究與整理由 Claude 協助。法規摘要是閱讀條文的整理，不是法律意見；使用前請對照全國法規資料庫原文。Management 3.0 卡片不是開放授權；角色卡模板改寫自 Sociocracy 3.0（CC BY-SA 4.0）。</footer>
+</main>
+</div>
+</body>
+</html>
