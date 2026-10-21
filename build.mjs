@@ -3,10 +3,13 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 import { Marked } from "marked";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const site = JSON.parse(readFileSync(join(root, "site.json"), "utf8"));
+// CSS 網址帶內容雜湊，樣式改了瀏覽器就會抓新檔，不受 GitHub Pages 10 分鐘快取影響
+const cssVer = createHash("sha256").update(readFileSync(join(root, "style.css"))).digest("hex").slice(0, 8);
 
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -73,7 +76,7 @@ function page({ title, body, toc }) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="./assets/style.css">
+<link rel="stylesheet" href="./assets/style.css?v=${cssVer}">
 </head>
 <body>
 <header class="bar"><a class="home" href="./">${esc(site.short)}</a><span class="links">${nav}</span></header>
