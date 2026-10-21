@@ -1,4 +1,5 @@
-// 把 src/framework.md 轉成 docs/index.html，給 GitHub Pages（main 分支 /docs）直接服務。
+// 把 src/*.md 轉成 docs/ 底下的靜態頁，給 GitHub Pages（main 分支 /docs）直接服務。
+// site.json 的 pages 列出各頁（slug 為空字串的是首頁）；沒有 pages 時只轉 src/framework.md。
 // 用法：npm install && npm run build
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -61,9 +62,15 @@ function render(md) {
   return { title, body, toc };
 }
 
-function page({ title, body, toc }) {
-  const nav = (site.related || [])
-    .map((r) => `<a href="${esc(r.url)}">${esc(r.label)}</a>`)
+const pages = site.pages || [{ file: "framework.md", slug: "", label: site.short, eyebrow: site.eyebrow }];
+
+function page({ title, body, toc, current }) {
+  const up = current ? "../" : "./";
+  const own = pages.length > 1
+    ? pages.map((p) => `<a href="${up}${p.slug ? p.slug + "/" : ""}"${p.slug === current ? ' aria-current="page"' : ""}>${esc(p.label)}</a>`).join("")
+    : "";
+  const related = (site.related || [])
+    .map((r, i) => `<a${i === 0 ? ' class="cta"' : ""} href="${esc(r.url)}">${esc(r.label)}</a>`)
     .join("");
   const tocHtml = `<nav class="toc" aria-label="本頁目錄"><ol>${toc.map((t) => `<li><a href="#${esc(t.id)}">${esc(t.text)}</a></li>`).join("")}</ol></nav>`;
   return `<!doctype html>
@@ -76,10 +83,10 @@ function page({ title, body, toc }) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="./assets/style.css?v=${cssVer}">
+<link rel="stylesheet" href="${up}assets/style.css?v=${cssVer}">
 </head>
 <body>
-<header class="bar"><a class="home" href="./">${esc(site.short)}</a><span class="links">${nav}</span></header>
+<header class="bar"><a class="home" href="${up}">${esc(site.short)}</a><span class="links">${own}${related}</span></header>
 <div class="shell">
 ${tocHtml}
 <main>
@@ -97,8 +104,12 @@ mkdirSync(join(out, "assets"), { recursive: true });
 copyFileSync(join(root, "style.css"), join(out, "assets", "style.css"));
 writeFileSync(join(out, ".nojekyll"), "");
 
-const { title, body, toc } = render(readFileSync(join(root, "src", "framework.md"), "utf8"));
 const legend = `<div class="legend">證據標記：<span class="tag F">F</span> 事實 <span class="tag E">E</span> 專家或機構主張 <span class="tag I">I</span> 推論 <span class="tag H">H</span> 未查證</div>`;
-const head = `<header class="doc"><div class="eyebrow">${esc(site.eyebrow)}</div><h1>${esc(title)}</h1>${legend}</header>\n`;
-writeFileSync(join(out, "index.html"), page({ title, body: head + body, toc }));
-console.log("docs/index.html  ←  src/framework.md");
+for (const p of pages) {
+  const { title, body, toc } = render(readFileSync(join(root, "src", p.file), "utf8"));
+  const head = `<header class="doc"><div class="eyebrow">${esc(p.eyebrow || site.eyebrow)}</div><h1>${esc(title)}</h1>${legend}</header>\n`;
+  const dir = p.slug ? join(out, p.slug) : out;
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "index.html"), page({ title, body: head + body, toc, current: p.slug }));
+  console.log(`docs/${p.slug ? p.slug + "/" : ""}index.html  ←  src/${p.file}`);
+}

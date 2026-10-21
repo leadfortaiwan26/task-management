@@ -34,8 +34,9 @@ strong { color: var(--fg); }
 .bar .links { display: flex; flex-wrap: wrap; gap: 6px 24px; align-items: center; }
 .bar .links a { color: var(--bar-fg); text-decoration: none; opacity: .85; }
 .bar .links a:hover { background: none; opacity: 1; color: var(--brand); }
-.bar .links a:first-child { opacity: 1; background: var(--brand); color: var(--fg); padding: 3px 12px; border-radius: 3px; font-weight: 700; }
-.bar .links a:first-child:hover { color: var(--fg); }
+.bar .links a[aria-current="page"] { opacity: 1; color: var(--brand); font-weight: 700; }
+.bar .links a.cta { opacity: 1; background: var(--brand); color: var(--fg); padding: 3px 12px; border-radius: 3px; font-weight: 700; }
+.bar .links a.cta:hover { color: var(--fg); }
 
 .shell { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 0; } }
